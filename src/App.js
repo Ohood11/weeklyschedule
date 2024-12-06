@@ -239,9 +239,6 @@ const TimeTableScheduler = () => {
   };
 
 
-
-
- 
   return (
     <div className="timetable-container">
       <div className="management-card">
