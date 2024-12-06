@@ -184,19 +184,52 @@ const TimeTableScheduler = () => {
     setSchedule(newSchedule);
   };
 
+ 
+  
+
   const exportToPDF = () => {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const timePeriods = getTimePeriodsForClass(selectedClass);
     
+    // Set document properties
     doc.setProperties({
       title: `${selectedClass} - Weekly Schedule`,
       subject: 'School Timetable',
-      creator: 'TimeTable Scheduler'
+      creator: 'Kinaawa High School'
     });
+  
+    // Add school header information
+    doc.setFontSize(18);
+    doc.setTextColor(26, 71, 42); // Dark green color
+    doc.text('KINAAWA HIGH SCHOOL', 148, 20, { align: 'center' });
     
-    doc.setFontSize(16);
-    doc.text(`Class ${selectedClass} - Weekly Schedule`, 15, 15);
+    doc.setFontSize(14);
+    doc.text('KAWEMPE CAMPUS', 148, 28, { align: 'center' });
     
+    // Add contact information
+    doc.setFontSize(10);
+    doc.setTextColor(102, 102, 102); // Gray color for contact details
+    doc.text('P.O. Box 9093,', 15, 35);
+    doc.text('Kampala-Uganda', 15, 40);
+    doc.text('Bombo Road - Kawempe Ttula', 15, 45);
+    
+    // Add contact numbers on the right
+    doc.text('Tel:+256(0)772 431975', 230, 35, { align: 'right' });
+    doc.text('+256(0)759 137103', 230, 40, { align: 'right' });
+    
+    // Add email
+    doc.text('E-mail: kinaawakawempe@gmail.com', 15, 50);
+    
+    // Add horizontal line
+    doc.setDrawColor(26, 71, 42);
+    doc.line(15, 52, 280, 52);
+    
+    // Add class schedule title
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Class ${selectedClass} - Weekly Schedule`, 15, 60);
+    
+    // Create table data
     const tableData = timePeriods.map(period => {
       return [
         period.time,
@@ -209,18 +242,20 @@ const TimeTableScheduler = () => {
     
     const headers = ['Time/Day', ...days];
     
+    // Generate table with modified styling
     doc.autoTable({
       head: [headers],
       body: tableData,
-      startY: 25,
+      startY: 65,
       styles: { 
         fontSize: 8, 
         cellPadding: 2,
         lineColor: 40,
-        lineWidth: 0.1
+        lineWidth: 0.1,
+        font: 'helvetica'
       },
       headStyles: {
-        fillColor: [66, 139, 202],
+        fillColor: [26, 71, 42], // Dark green to match school color
         textColor: 255,
         fontSize: 9,
         fontStyle: 'bold'
@@ -235,10 +270,24 @@ const TimeTableScheduler = () => {
       theme: 'grid'
     });
     
+    // Add footer
+    const pageCount = doc.internal.getNumberOfPages();
+    doc.setFontSize(8);
+    doc.setTextColor(102, 102, 102);
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      const today = new Date().toLocaleDateString();
+      doc.text(`Generated on: ${today}`, 15, doc.internal.pageSize.height - 10);
+      doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 10);
+    }
+    
+    // Save the PDF
     doc.save(`${selectedClass}_schedule.pdf`);
   };
 
 
+
+ 
   return (
     <div className="timetable-container">
       <div className="management-card">
