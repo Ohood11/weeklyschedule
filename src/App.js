@@ -286,7 +286,7 @@ const TimeTableScheduler = () => {
       <div className="management-card">
         <div className="management-header">
           <div className="header-content">
-            <h2 className="header-title">Teacher Management (Total: {teachers.length}/60)</h2>
+            <h2 className="header-title">Teacher Management (Total: {teachers.length}/65)</h2>
             <button 
               onClick={() => {
                 if (window.confirm('Are you sure about clearing all teachers?')) {
