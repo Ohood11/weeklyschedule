@@ -203,7 +203,8 @@
   
   .subject-name {
     font-size: 0.875rem;
-    color: #4b5563;
+    color: #111316;
+    font-weight: bold;
   }
 
   .days-toggle-container {
