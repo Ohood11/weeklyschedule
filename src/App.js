@@ -20,7 +20,7 @@ const TimeTableScheduler = () => {
   const subjects = [
     'Mathematics', 'Physics', 'Chemistry', 'Biology', 'English',
     'History', 'Geography', 'P.E', 'ICT', 'ENT', 'Arabic',
-    'Kiswahili', 'Luganda', 'Literature', 'ART'
+    'Kiswahili', 'Luganda', 'Literature', 'ART', 'Theology'
   ];
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const TimeTableScheduler = () => {
   const classes = [
     ...['S1', 'S2'].flatMap(level => ['A', 'B', 'C'].map(stream => `${level}${stream}`)),
     ...['S3', 'S4'].flatMap(level => ['A', 'B', 'C'].map(stream => `${level}${stream}`)),
-    ...['S5', 'S6'].flatMap(level => ['A', 'B'].map(stream => `${level}${stream}`))
+    ...['S5', 'S6'].flatMap(level => ['_Arts', '_Scie'].map(stream => `${level}${stream}`))
   ];
 
   const getTimePeriodsForClass = (className) => {
@@ -222,7 +222,7 @@ const TimeTableScheduler = () => {
     
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
-    doc.text(`Class ${selectedClass} - Weekly Schedule`, 15, 60);
+    doc.text(`Class ${selectedClass} - Weekly Schedule`, 15, 65);
     
     const tableData = timePeriods.map(period => {
       return [
@@ -250,8 +250,8 @@ const TimeTableScheduler = () => {
       headStyles: {
         fillColor: [26, 71, 42],
         textColor: 255,
-        fontSize: 9,
-        fontStyle: 'bold'
+        fontSize: 20,
+        // fontStyle: 'bold'
       },
       columnStyles: {
         0: { cellWidth: 30 },
@@ -286,7 +286,7 @@ const TimeTableScheduler = () => {
       <div className="management-card">
         <div className="management-header">
           <div className="header-content">
-            <h2 className="header-title">Teacher Management (Total: {teachers.length}/65)</h2>
+            <h2 className="header-title">Teacher Management (Total: {teachers.length})</h2>
             <button 
               onClick={() => {
                 if (window.confirm('Are you sure about clearing all teachers?')) {
@@ -322,7 +322,7 @@ const TimeTableScheduler = () => {
             </select>
             <select
               multiple
-              value={newTeacher.classes}
+              value={newTeacher.classes} 
               onChange={(e) => setNewTeacher({
                 ...newTeacher,
                 classes: Array.from(e.target.selectedOptions, option => option.value)
@@ -429,11 +429,12 @@ const TimeTableScheduler = () => {
                       <td key={day} className="table-cell">
                         {schedule[selectedClass]?.[day]?.[period.id]?.teacher && (
                           <div className="period-info">
-                            <div className="teacher-name">
-                              {schedule[selectedClass][day][period.id].teacher}
-                            </div>
+                           
                             <div className="subject-name">
                               {schedule[selectedClass][day][period.id].subject}
+                            </div>
+                            <div className="teacher">
+                              {schedule[selectedClass][day][period.id].teacher}
                             </div>
                           </div>
                         )}
