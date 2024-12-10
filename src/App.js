@@ -10,11 +10,12 @@ const TimeTableScheduler = () => {
     name: '', 
     subject: '', 
     classes: [],
+    streams: [], 
     availableDays: [],
   });
 
   const [schedule, setSchedule] = useState({});
-  const [selectedClass, setSelectedClass] = useState('S1A');
+  const [selectedClass, setSelectedClass] = useState('S5A');
   const [selectedDays, setSelectedDays] = useState([]);
 
   const subjects = [
@@ -34,18 +35,6 @@ const TimeTableScheduler = () => {
     localStorage.setItem('schoolTeachers', JSON.stringify(teachers));
   }, [teachers]);
 
-  const S1andS2timePeriods = [
-    { id: 1, time: '7:20 AM - 8:40 AM' },
-    { id: 2, time: '8:40 AM - 10:00 AM' },
-    { id: 3, time: '10:20 AM - 11:40 AM' },
-    { id: 4, time: '11:40 AM - 12:20 PM' },
-    { id: 5, time: '12:20 PM - 1:00 PM' },
-    { id: 6, time: '2:00 PM - 2:40 PM' },
-    { id: 7, time: '2:40 PM - 3:20 PM' },
-    { id: 8, time: '3:20 PM - 4:40 PM' }
-  ];
-
-  // Regular time periods for other classes
   const regularTimePeriods = [
     { id: 1, time: '7:20 AM - 8:40 AM' },
     { id: 2, time: '8:40 AM - 10:00 AM' },
@@ -60,13 +49,11 @@ const TimeTableScheduler = () => {
   const classes = [
     ...['S1', 'S2'].flatMap(level => ['A', 'B', 'C'].map(stream => `${level}${stream}`)),
     ...['S3', 'S4'].flatMap(level => ['A', 'B', 'C'].map(stream => `${level}${stream}`)),
-    ...['S5', 'S6'].flatMap(level => ['_Arts', '_Scie'].map(stream => `${level}${stream}`))
+    ...['S5', 'S6'].flatMap(level => ['A', 'B'].map(stream => `${level}${stream}`)) 
   ];
 
   const getTimePeriodsForClass = (className) => {
-    return className.startsWith('S1') || className.startsWith('S2') 
-      ? S1andS2timePeriods 
-      : regularTimePeriods;
+    return regularTimePeriods;
   };
 
   const handleDayToggle = (day) => {
@@ -91,6 +78,7 @@ const TimeTableScheduler = () => {
         name: '', 
         subject: '', 
         classes: [], 
+        streams: [], 
         availableDays: [] 
       });
       setSelectedDays([]);
@@ -129,22 +117,31 @@ const TimeTableScheduler = () => {
       });
 
       const classLevel = className.substring(0, 2);
+      const stream = className.substring(2); 
       
       days.forEach(day => {
         timePeriods.forEach(period => {
-          const availableTeachers = teacherAssignments
-            .filter(teacher => 
-              teacher.classes.includes(classLevel) && 
-              teacher.periodsAssigned < targetPeriodsPerTeacher * 1.2 &&
-              (!teacher.dailyAssignments[day] || teacher.dailyAssignments[day] < 4) &&
-              teacher.availableDays.includes(day) &&
-              (!teacher.dailyClassAssignments[day]?.includes(className))
-            )
-            .sort((a, b) => {
-              const aLoad = a.periodsAssigned + (a.dailyAssignments[day] || 0);
-              const bLoad = b.periodsAssigned + (b.dailyAssignments[day] || 0);
-              return aLoad - bLoad;
-            });
+          let availableTeachers = teacherAssignments.filter(teacher => {
+            if (classLevel === 'S5' || classLevel === 'S6') {
+              return teacher.classes.includes(classLevel) && 
+                     teacher.streams.includes(stream) && 
+                     teacher.periodsAssigned < targetPeriodsPerTeacher * 1.2 &&
+                     (!teacher.dailyAssignments[day] || teacher.dailyAssignments[day] < 4) &&
+                     teacher.availableDays.includes(day) &&
+                     (!teacher.dailyClassAssignments[day]?.includes(className));
+            } else {
+
+              return teacher.classes.includes(classLevel) && 
+                     teacher.periodsAssigned < targetPeriodsPerTeacher * 1.2 &&
+                     (!teacher.dailyAssignments[day] || teacher.dailyAssignments[day] < 4) &&
+                     teacher.availableDays.includes(day) &&
+                     (!teacher.dailyClassAssignments[day]?.includes(className));
+            }
+          }).sort((a, b) => {
+            const aLoad = a.periodsAssigned + (a.dailyAssignments[day] || 0);
+            const bLoad = b.periodsAssigned + (b.dailyAssignments[day] || 0);
+            return aLoad - bLoad;
+          });
 
           if (availableTeachers.length > 0) {
             const selectedTeacher = availableTeachers[0];
@@ -184,20 +181,15 @@ const TimeTableScheduler = () => {
     setSchedule(newSchedule);
   };
 
- 
-  
-
   const exportToPDF = () => {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const timePeriods = getTimePeriodsForClass(selectedClass);
     
-    // Set document properties
     doc.setProperties({
       title: `${selectedClass} - Weekly Schedule`,
       subject: 'School Timetable',
       creator: 'Kinaawa High School'
     });
-  
   
     doc.setFontSize(18);
     doc.setTextColor(26, 71, 42); 
@@ -251,7 +243,6 @@ const TimeTableScheduler = () => {
         fillColor: [26, 71, 42],
         textColor: 255,
         fontSize: 20,
-        // fontStyle: 'bold'
       },
       columnStyles: {
         0: { cellWidth: 30 },
@@ -263,7 +254,6 @@ const TimeTableScheduler = () => {
       theme: 'grid'
     });
     
-    // Add footer
     const pageCount = doc.internal.getNumberOfPages();
     doc.setFontSize(8);
     doc.setTextColor(102, 102, 102);
@@ -274,13 +264,9 @@ const TimeTableScheduler = () => {
       doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 10);
     }
     
-    // Save the PDF
     doc.save(`${selectedClass}_schedule.pdf`);
   };
 
-
-
- 
   return (
     <div className="timetable-container">
       <div className="management-card">
@@ -333,6 +319,21 @@ const TimeTableScheduler = () => {
                 <option key={className} value={className}>{className}</option>
               ))}
             </select>
+
+            {newTeacher.classes.some(c => c === 'S5' || c === 'S6') && (
+              <select
+                multiple
+                value={newTeacher.streams}
+                onChange={(e) => setNewTeacher({
+                  ...newTeacher,
+                  streams: Array.from(e.target.selectedOptions, option => option.value)
+                })}
+                className="input-field"
+              >
+                <option value="A">Arts A</option>
+                <option value="B">sciences B</option>
+              </select>
+            )}
             
             <div className="days-toggle-container">
               {days.map(day => (
@@ -348,7 +349,12 @@ const TimeTableScheduler = () => {
   
             <button 
               onClick={addTeacher}
-              disabled={!newTeacher.name || !newTeacher.subject || selectedDays.length === 0}
+              disabled={
+                !newTeacher.name || 
+                !newTeacher.subject || 
+                selectedDays.length === 0 ||
+                (newTeacher.classes.some(c => c === 'S5' || c === 'S6') && newTeacher.streams.length === 0)
+              }
               className="add-button"
             >
               <Plus className="w-4 h-4" />
@@ -362,7 +368,12 @@ const TimeTableScheduler = () => {
                 <div className="teacher-info">
                   <div className="teacher-name">{teacher.name}</div>
                   <div className="teacher-subject">{teacher.subject}</div>
-                  <div className="teacher-classes">Classes: {teacher.classes.join(', ')}</div>
+                  <div className="teacher-classes">
+                    Classes: {teacher.classes.join(', ')}
+                    {(teacher.classes.includes('S5') || teacher.classes.includes('S6')) && 
+                      ` ( ${teacher.streams.join(', ')})`
+                    }
+                  </div>
                   <div className="teacher-periods">Available: {teacher.availableDays.join(', ')}</div>
                   {teacher.periodsAssigned > 0 && (
                     <div className="teacher-periods">Periods: {teacher.periodsAssigned}</div>
@@ -419,7 +430,6 @@ const TimeTableScheduler = () => {
                   ))}
                 </tr>
               </thead>
-
               
               <tbody>
                 {getTimePeriodsForClass(selectedClass).map(period => (
@@ -429,7 +439,6 @@ const TimeTableScheduler = () => {
                       <td key={day} className="table-cell">
                         {schedule[selectedClass]?.[day]?.[period.id]?.teacher && (
                           <div className="period-info">
-                           
                             <div className="subject-name">
                               {schedule[selectedClass][day][period.id].subject}
                             </div>
