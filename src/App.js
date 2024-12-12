@@ -49,7 +49,7 @@ const TimeTableScheduler = () => {
   const classes = [
     ...['S1', 'S2'].flatMap(level => ['A', 'B', 'C'].map(stream => `${level}${stream}`)),
     ...['S3', 'S4'].flatMap(level => ['A', 'B', 'C'].map(stream => `${level}${stream}`)),
-    ...['S5', 'S6'].flatMap(level => ['A', 'B'].map(stream => `${level}${stream}`)) 
+    ...['S5', 'S6'].flatMap(level => ['_Arts', '_Scie'].map(stream => `${level}${stream}`)) 
   ];
 
   const getTimePeriodsForClass = (className) => {
