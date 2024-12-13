@@ -106,198 +106,223 @@ const TimeTableScheduler = () => {
   };
 
   const generateSchedule = () => {
-    const newSchedule = {};
-    let teacherAssignments = teachers.map(teacher => ({
-      ...teacher,
-      periodsAssigned: 0,
-      dailyAssignments: {},
-      dailyClassAssignments: {},
-      quadralsAssigned: 0,
-      doublesAssigned: 0
-    }));
+  const newSchedule = {};
+  let teacherAssignments = teachers.map(teacher => ({
+    ...teacher,
+    periodsAssigned: 0,
+    dailyAssignments: {},
+    dailyClassAssignments: {},
+    quadralsAssigned: 0,
+    doublesAssigned: 0
+  }));
 
-    const scienceSubjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Geography'];
-    const artsSubjects = subjects.filter(subject => !scienceSubjects.includes(subject));
-    const optionalSubjects = ['P.E', 'ART', 'ICT', 'ENT', 'Kiswahili', 'Luganda', 'Literature', 'Arabic', 'Economics', 'SubMath'];
+  const scienceSubjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Geography'];
+  const artsSubjects = subjects.filter(subject => !scienceSubjects.includes(subject));
+  const optionalSubjects = ['P.E', 'ART', 'ICT', 'ENT', 'Kiswahili', 'Luganda', 'Literature', 'Arabic', 'Economics', 'SubMath'];
 
-    const scienceQuadralsPerWeek = 3;
-    const scienceDoublesPerWeek = 2;
-    const artsQuadralsPerWeek = 2;
-    const artsDoublesPerWeek = 2;
-    const minDoublesPerWeek = 3;
-    const subsidiaryQuadralsPerWeek = 2;
-    const subsidiaryPeriodsPerWeek = 1;
+  const scienceQuadralsPerWeek = 3;
+  const scienceDoublesPerWeek = 2;
+  const artsQuadralsPerWeek = 2;
+  const artsDoublesPerWeek = 2;
+  const minDoublesPerWeek = 3;
+  const subsidiaryQuadralsPerWeek = 2;
+  const subsidiaryPeriodsPerWeek = 1;
 
-    classes.forEach(className => {
-      const timePeriods = getTimePeriodsForClass(className);
-      const totalPeriodsPerWeek = days.length * timePeriods.length;
-      const targetPeriodsPerTeacher = Math.floor(totalPeriodsPerWeek / teachers.length);
+  classes.forEach(className => {
+    const timePeriods = getTimePeriodsForClass(className);
+    const totalPeriodsPerWeek = days.length * timePeriods.length;
+    const targetPeriodsPerTeacher = Math.floor(totalPeriodsPerWeek / teachers.length);
 
-      newSchedule[className] = {};
-      days.forEach(day => {
-        newSchedule[className][day] = {};
-        timePeriods.forEach(period => {
+    newSchedule[className] = {};
+    days.forEach(day => {
+      newSchedule[className][day] = {};
+      timePeriods.forEach(period => {
+        newSchedule[className][day][period.id] = {
+          teacher: 'Unassigned',
+          subject: '-',
+          time: period.time
+        };
+      });
+    });
+
+    const classLevel = className.substring(0, 2);
+    const stream = className.substring(2); 
+    
+    days.forEach(day => {
+      timePeriods.forEach(period => {
+        let availableTeachers = teacherAssignments.filter(teacher => {
+          if (classLevel === 'S5' || classLevel === 'S6') {
+            if (teacher.classes.includes(classLevel) && 
+                teacher.streams.includes(stream) && 
+                teacher.periodsAssigned < targetPeriodsPerTeacher * 1.2 &&
+                (!teacher.dailyAssignments[day] || teacher.dailyAssignments[day] < 4) &&
+                teacher.availableDays.includes(day) &&
+                (!teacher.dailyClassAssignments[day]?.includes(className))) {
+              if (scienceSubjects.includes(teacher.subject)) {
+                // Ensure quadrals and doubles for science subjects
+                if (teacher.quadralsAssigned < scienceQuadralsPerWeek && period.id % 2 === 1 && period.id < 6) {
+                  return true;
+                } else if (teacher.doublesAssigned < scienceDoublesPerWeek && period.id % 2 === 1) {
+                  return true;
+                }
+              } else if (artsSubjects.includes(teacher.subject)) {
+                // Ensure quadrals and doubles for arts subjects
+                if (teacher.quadralsAssigned < artsQuadralsPerWeek && period.id % 2 === 1 && period.id < 6) {
+                  return true;
+                } else if (teacher.doublesAssigned < artsDoublesPerWeek && period.id % 2 === 1) {
+                  return true;
+                }
+              } else if (optionalSubjects.includes(teacher.subject)) {
+                // Ensure fewer periods for optional subjects
+                if (teacher.periodsAssigned < targetPeriodsPerTeacher * 0.7) {
+                  return true;
+                }
+              } else if (teacher.subject === 'General Paper') {
+                // Ensure General Paper is compulsory and has a quadral
+                if (teacher.quadralsAssigned < 1 && period.id % 2 === 1 && period.id < 6) {
+                  return true;
+                }
+              } else if (teacher.subject === 'SubMath' || teacher.subject === 'ICT') {
+                // Ensure SubMath and ICT are scheduled at the same time and have two quadrals and one period
+                if (teacher.quadralsAssigned < subsidiaryQuadralsPerWeek && period.id % 2 === 1 && period.id < 6) {
+                  return true;
+                } else if (teacher.periodsAssigned < subsidiaryPeriodsPerWeek && period.id % 2 === 1) {
+                  return true;
+                }
+              }
+              return true;
+            }
+            return false;
+          } else if (classLevel === 'S1' || classLevel === 'S2') {
+            if (teacher.classes.includes(classLevel) && 
+                teacher.periodsAssigned < targetPeriodsPerTeacher * 1.2 &&
+                (!teacher.dailyAssignments[day] || teacher.dailyAssignments[day] < 4) &&
+                teacher.availableDays.includes(day) &&
+                (!teacher.dailyClassAssignments[day]?.includes(className))) {
+              if (scienceSubjects.includes(teacher.subject)) {
+                // Give more time to science subjects
+                if (period.id % 2 === 1) {
+                  return true;
+                }
+              } else if (artsSubjects.includes(teacher.subject)) {
+                // Give more time to arts subjects
+                if (period.id % 2 === 1) {
+                  return true;
+                }
+              } else if (optionalSubjects.includes(teacher.subject)) {
+                // Treat optional subjects as compulsory in S1 and S2
+                if (period.id % 2 === 1) {
+                  return true;
+                }
+              }
+              return true;
+            }
+            return false;
+          } else {
+            if (teacher.classes.includes(classLevel) && 
+                teacher.periodsAssigned < targetPeriodsPerTeacher * 1.2 &&
+                (!teacher.dailyAssignments[day] || teacher.dailyAssignments[day] < 4) &&
+                teacher.availableDays.includes(day) &&
+                (!teacher.dailyClassAssignments[day]?.includes(className))) {
+              if (scienceSubjects.includes(teacher.subject)) {
+                // Give more time to science subjects
+                if (period.id % 2 === 1) {
+                  return true;
+                }
+              } else if (artsSubjects.includes(teacher.subject)) {
+                // Give more time to arts subjects
+                if (period.id % 2 === 1) {
+                  return true;
+                }
+              } else if (optionalSubjects.includes(teacher.subject)) {
+                // Ensure fewer periods for optional subjects in S3 and above
+                if (teacher.periodsAssigned < targetPeriodsPerTeacher * 0.7) {
+                  return true;
+                }
+              }
+              return true;
+            }
+            return false;
+          }
+        }).sort((a, b) => {
+          const aLoad = a.periodsAssigned + (a.dailyAssignments[day] || 0);
+          const bLoad = b.periodsAssigned + (b.dailyAssignments[day] || 0);
+          return aLoad - bLoad;
+        });
+
+        if (availableTeachers.length > 0) {
+          const selectedTeacher = availableTeachers[0];
+          const teacherIndex = teacherAssignments.findIndex(t => t.id === selectedTeacher.id);
+          
+          teacherAssignments[teacherIndex] = {
+            ...selectedTeacher,
+            periodsAssigned: selectedTeacher.periodsAssigned + 1,
+            dailyAssignments: {
+              ...selectedTeacher.dailyAssignments,
+              [day]: (selectedTeacher.dailyAssignments[day] || 0) + 1
+            },
+            dailyClassAssignments: {
+              ...selectedTeacher.dailyClassAssignments,
+              [day]: [...(selectedTeacher.dailyClassAssignments[day] || []), className]
+            },
+            quadralsAssigned: period.id % 2 === 1 && period.id < 6 ? selectedTeacher.quadralsAssigned + 1 : selectedTeacher.quadralsAssigned,
+            doublesAssigned: period.id % 2 === 1 ? selectedTeacher.doublesAssigned + 1 : selectedTeacher.doublesAssigned
+          };
+          
           newSchedule[className][day][period.id] = {
-            teacher: 'Unassigned',
-            subject: '-',
+            teacher: selectedTeacher.name,
+            subject: selectedTeacher.subject,
             time: period.time
           };
-        });
-      });
 
-      const classLevel = className.substring(0, 2);
-      const stream = className.substring(2); 
-      
-      days.forEach(day => {
-        timePeriods.forEach(period => {
-          let availableTeachers = teacherAssignments.filter(teacher => {
-            if (classLevel === 'S5' || classLevel === 'S6') {
-              if (teacher.classes.includes(classLevel) && 
-                  teacher.streams.includes(stream) && 
-                  teacher.periodsAssigned < targetPeriodsPerTeacher * 1.2 &&
-                  (!teacher.dailyAssignments[day] || teacher.dailyAssignments[day] < 4) &&
-                  teacher.availableDays.includes(day) &&
-                  (!teacher.dailyClassAssignments[day]?.includes(className))) {
-                if (scienceSubjects.includes(teacher.subject)) {
-                  // Ensure quadrals and doubles for science subjects
-                  if (teacher.quadralsAssigned < scienceQuadralsPerWeek && period.id % 2 === 1 && period.id < 6) {
-                    return true;
-                  } else if (teacher.doublesAssigned < scienceDoublesPerWeek && period.id % 2 === 1) {
-                    return true;
-                  }
-                } else if (artsSubjects.includes(teacher.subject)) {
-                  // Ensure quadrals and doubles for arts subjects
-                  if (teacher.quadralsAssigned < artsQuadralsPerWeek && period.id % 2 === 1 && period.id < 6) {
-                    return true;
-                  } else if (teacher.doublesAssigned < artsDoublesPerWeek && period.id % 2 === 1) {
-                    return true;
-                  }
-                } else if (optionalSubjects.includes(teacher.subject)) {
-                  // Ensure fewer periods for optional subjects
-                  if (teacher.periodsAssigned < targetPeriodsPerTeacher * 0.7) {
-                    return true;
-                  }
-                } else if (teacher.subject === 'General Paper') {
-                  // Ensure General Paper is compulsory and has a quadral
-                  if (teacher.quadralsAssigned < 1 && period.id % 2 === 1 && period.id < 6) {
-                    return true;
-                  }
-                } else if (teacher.subject === 'SubMath' || teacher.subject === 'ICT') {
-                  // Ensure SubMath and ICT are scheduled at the same time and have two quadrals and one period
-                  if (teacher.quadralsAssigned < subsidiaryQuadralsPerWeek && period.id % 2 === 1 && period.id < 6) {
-                    return true;
-                  } else if (teacher.periodsAssigned < subsidiaryPeriodsPerWeek && period.id % 2 === 1) {
-                    return true;
-                  }
-                }
-                return true;
-              }
-              return false;
-            } else {
-              if (teacher.classes.includes(classLevel) && 
-                  teacher.periodsAssigned < targetPeriodsPerTeacher * 1.2 &&
-                  (!teacher.dailyAssignments[day] || teacher.dailyAssignments[day] < 4) &&
-                  teacher.availableDays.includes(day) &&
-                  (!teacher.dailyClassAssignments[day]?.includes(className))) {
-                if (scienceSubjects.includes(teacher.subject)) {
-                  // Give more time to science subjects
-                  if (period.id % 2 === 1) {
-                    return true;
-                  }
-                } else if (artsSubjects.includes(teacher.subject)) {
-                  // Give more time to arts subjects
-                  if (period.id % 2 === 1) {
-                    return true;
-                  }
-                } else if (optionalSubjects.includes(teacher.subject)) {
-                  // Ensure fewer periods for optional subjects
-                  if (teacher.periodsAssigned < targetPeriodsPerTeacher * 0.7) {
-                    return true;
-                  }
-                }
-                return true;
-              }
-              return false;
-            }
-          }).sort((a, b) => {
-            const aLoad = a.periodsAssigned + (a.dailyAssignments[day] || 0);
-            const bLoad = b.periodsAssigned + (b.dailyAssignments[day] || 0);
-            return aLoad - bLoad;
-          });
-
-          if (availableTeachers.length > 0) {
-            const selectedTeacher = availableTeachers[0];
-            const teacherIndex = teacherAssignments.findIndex(t => t.id === selectedTeacher.id);
-            
-            teacherAssignments[teacherIndex] = {
-              ...selectedTeacher,
-              periodsAssigned: selectedTeacher.periodsAssigned + 1,
-              dailyAssignments: {
-                ...selectedTeacher.dailyAssignments,
-                [day]: (selectedTeacher.dailyAssignments[day] || 0) + 1
-              },
-              dailyClassAssignments: {
-                ...selectedTeacher.dailyClassAssignments,
-                [day]: [...(selectedTeacher.dailyClassAssignments[day] || []), className]
-              },
-              quadralsAssigned: period.id % 2 === 1 && period.id < 6 ? selectedTeacher.quadralsAssigned + 1 : selectedTeacher.quadralsAssigned,
-              doublesAssigned: period.id % 2 === 1 ? selectedTeacher.doublesAssigned + 1 : selectedTeacher.doublesAssigned
-            };
-            
-            newSchedule[className][day][period.id] = {
+          // Handle Geography in both streams
+          if (selectedTeacher.subject === 'Geography' && (classLevel === 'S5' || classLevel === 'S6')) {
+            const otherStream = stream === 'A' ? 'B' : 'A';
+            const otherClassName = `${classLevel}${otherStream}`;
+            newSchedule[otherClassName][day][period.id] = {
               teacher: selectedTeacher.name,
               subject: selectedTeacher.subject,
               time: period.time
             };
-
-            // Handle Geography in both streams
-            if (selectedTeacher.subject === 'Geography' && (classLevel === 'S5' || classLevel === 'S6')) {
-              const otherStream = stream === 'A' ? 'B' : 'A';
-              const otherClassName = `${classLevel}${otherStream}`;
-              newSchedule[otherClassName][day][period.id] = {
-                teacher: selectedTeacher.name,
-                subject: selectedTeacher.subject,
-                time: period.time
-              };
-            }
-
-            // Handle General Paper in both streams
-            if (selectedTeacher.subject === 'General Paper' && (classLevel === 'S5' || classLevel === 'S6')) {
-              const otherStream = stream === 'A' ? 'B' : 'A';
-              const otherClassName = `${classLevel}${otherStream}`;
-              newSchedule[otherClassName][day][period.id] = {
-                teacher: selectedTeacher.name,
-                subject: selectedTeacher.subject,
-                time: period.time
-              };
-            }
-
-            // Handle SubMath and ICT at the same time in both streams
-            if (selectedTeacher.subject === 'SubMath' || selectedTeacher.subject === 'ICT') {
-              const otherSubject = selectedTeacher.subject === 'SubMath' ? 'ICT' : 'SubMath';
-              const otherStream = stream === 'A' ? 'B' : 'A';
-              const otherClassName = `${classLevel}${otherStream}`;
-              newSchedule[otherClassName][day][period.id] = {
-                teacher: selectedTeacher.name,
-                subject: otherSubject,
-                time: period.time
-              };
-            }
           }
-        });
+
+          // Handle General Paper in both streams
+          if (selectedTeacher.subject === 'General Paper' && (classLevel === 'S5' || classLevel === 'S6')) {
+            const otherStream = stream === 'A' ? 'B' : 'A';
+            const otherClassName = `${classLevel}${otherStream}`;
+            newSchedule[otherClassName][day][period.id] = {
+              teacher: selectedTeacher.name,
+              subject: selectedTeacher.subject,
+              time: period.time
+            };
+          }
+
+          // Handle SubMath and ICT at the same time in both streams
+          if (selectedTeacher.subject === 'SubMath' || selectedTeacher.subject === 'ICT') {
+            const otherSubject = selectedTeacher.subject === 'SubMath' ? 'ICT' : 'SubMath';
+            const otherStream = stream === 'A' ? 'B' : 'A';
+            const otherClassName = `${classLevel}${otherStream}`;
+            newSchedule[otherClassName][day][period.id] = {
+              teacher: selectedTeacher.name,
+              subject: otherSubject,
+              time: period.time
+            };
+          }
+        }
       });
     });
+  });
 
-    setTeachers(teachers.map(teacher => {
-      const updatedTeacher = teacherAssignments.find(t => t.id === teacher.id);
-      return {
-        ...teacher,
-        periodsAssigned: updatedTeacher ? updatedTeacher.periodsAssigned : 0
-      };
-    }));
-    setSchedule(newSchedule);
-    alert('Schedule generated successfully!');
-  };
+  setTeachers(teachers.map(teacher => {
+    const updatedTeacher = teacherAssignments.find(t => t.id === teacher.id);
+    return {
+      ...teacher,
+      periodsAssigned: updatedTeacher ? updatedTeacher.periodsAssigned : 0
+    };
+  }));
+  setSchedule(newSchedule);
+  alert('Schedule generated successfully!');
+};
 
   const exportToPDF = () => {
     const doc = new jsPDF('landscape', 'mm', 'a4');
