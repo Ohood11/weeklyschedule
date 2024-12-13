@@ -1,230 +1,254 @@
 .timetable-container {
-    padding: 1rem;
-  }
-  
-  .management-card {
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-  }
-  
-  .management-header {
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .header-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-  
-  .clear-button {
-    padding: 0.5rem 1rem;
-    background-color: #ef4444;
-    color: white;
-    border-radius: 0.25rem;
-  }
-  
-  .clear-button:hover {
-    background-color: #dc2626;
-  }
-  
-  .input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .input-row {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .input-field {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.25rem;
-  }
-  
-  .add-button {
-    padding: 0.5rem 1rem;
-    background-color: #3b82f6;
-    color: white;
-    border-radius: 0.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .add-button:hover {
-    background-color: #2563eb;
-  }
-  
-  .teacher-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-  
-  .teacher-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem;
-    background-color: #f9fafb;
-    border-radius: 0.25rem;
-  }
-  
-  .teacher-info {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .teacher-name {
-    font-weight: 500;
-  }
-  
-  .teacher-subject {
-    color: #4b5563;
-  }
-  
-  .teacher-classes {
-    color: #4b5563;
-  }
-  
-  .teacher-periods {
-    color: #2563eb;
-  }
-  
-  .remove-button {
-    padding: 0.25rem;
-    color: #6b7280;
-    border-radius: 0.25rem;
-  }
-  
-  .remove-button:hover {
-    background-color: #e5e7eb;
-  }
-  
-  .generate-button {
-    width: 100%;
-    padding: 0.5rem;
-    background-color: #22c55e;
-    color: white;
-    border-radius: 0.25rem;
-  }
-  
-  .generate-button:hover {
-    background-color: #16a34a;
-  }
-  
-  .schedule-card {
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-  }
-  
-  .schedule-header {
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .class-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-  
-  .class-button {
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.25rem;
-  }
-  
-  .class-button-active {
-    background-color: #3b82f6;
-    color: white;
-  }
-  
-  .class-button-inactive {
-    background-color: #f3f4f6;
-  }
-  
-  .class-button-inactive:hover {
-    background-color: #e5e7eb;
-  }
-  
-  .schedule-table-container {
-    overflow-x: auto;
-  }
-  
-  .schedule-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 800px;
-  }
-  
-  .table-header {
-    border: 1px solid #e5e7eb;
-    padding: 0.75rem;
-    background-color: #f9fafb;
-  }
-  
-  .table-cell {
-    border: 1px solid #e5e7eb;
-    padding: 0.75rem;
-  }
-  
-  .time-cell {
-    font-weight: 500;
-  }
-  
-  .period-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  
-  .teacher-name {
-    font-weight: 500;
-  }
-  
-  .subject-name {
-    font-size: 0.875rem;
-    color: #111316;
-    font-weight: bold;
-  }
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
 
-  .days-toggle-container {
-    display: flex;
-    gap: 0.5rem;
-    margin: 0.5rem 0;
-  }
-  .day-toggle {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 0.25rem;
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .day-toggle.day-selected {
-    background: #2563eb;
-    color: white;
-    border-color: #2563eb;
-  }
-  .day-toggle:hover {
-    border-color: #2563eb;
-  }
+.management-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+}
+
+.management-header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.clear-button {
+  padding: 0.5rem 1rem;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s;
+}
+
+.clear-button:hover {
+  background-color: #dc2626;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.input-field {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.25rem;
+  transition: border-color 0.3s;
+}
+
+.input-field:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.add-button {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.add-button:hover {
+  background-color: #2563eb;
+}
+
+.teacher-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem;
+}
+
+.teacher-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s;
+}
+
+.teacher-card:hover {
+  background-color: #e5e7eb;
+}
+
+.teacher-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.teacher-name {
+  font-weight: 500;
+}
+
+.teacher-subject {
+  color: #4b5563;
+}
+
+.teacher-classes {
+  color: #4b5563;
+}
+
+.teacher-periods {
+  color: #2563eb;
+}
+
+.remove-button {
+  padding: 0.25rem;
+  color: #6b7280;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s;
+}
+
+.remove-button:hover {
+  background-color: #e5e7eb;
+}
+
+.generate-button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #22c55e;
+  color: white;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s;
+}
+
+.generate-button:hover {
+  background-color: #16a34a;
+}
+
+.schedule-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.schedule-header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.class-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.class-button {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s;
+}
+
+.class-button-active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.class-button-inactive {
+  background-color: #f3f4f6;
+}
+
+.class-button-inactive:hover {
+  background-color: #e5e7eb;
+}
+
+.schedule-table-container {
+  overflow-x: auto;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.table-header {
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+}
+
+.table-cell {
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+}
+
+.time-cell {
+  font-weight: 500;
+}
+
+.period-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.teacher-name {
+  font-weight: 500;
+}
+
+.subject-name {
+  font-size: 0.875rem;
+  color: #111316;
+  font-weight: bold;
+}
+
+.days-toggle-container {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.day-toggle {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.day-toggle.day-selected {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.day-toggle:hover {
+  border-color: #2563eb;
+}
