@@ -9,11 +9,11 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+    animation: App-logo-spin infinite 20s;
   }
 }
 
-.subject-name2{
+.subject-name2 {
   font-weight: bold;
   font-size: 20px;
 }
@@ -39,5 +39,31 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+@media (max-width: 768px) {
+  .input-row {
+    flex-direction: column;
+  }
+
+  .input-field {
+    margin-bottom: 1rem;
+  }
+
+  .days-toggle-container {
+    flex-wrap: wrap;
+  }
+
+  .class-buttons {
+    flex-direction: column;
+  }
+
+  .schedule-table {
+    min-width: auto;
+  }
+
+  .table-header,
+  .table-cell {
+    font-size: 0.875rem;
   }
 }
