@@ -41,6 +41,7 @@
     transform: rotate(360deg);
   }
 }
+
 @media (max-width: 768px) {
   .input-row {
     flex-direction: column;
@@ -66,4 +67,4 @@
   .table-cell {
     font-size: 0.875rem;
   }
-}
+}s
